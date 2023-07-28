@@ -1,0 +1,12 @@
+CREATE DATABASE Notebook;
+
+USE Notebook;
+
+CREATE TABLE Notes(
+    id INT IDENTITY(1, 1) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content VARCHAR(MAX) NOT NULL,
+    createdAt DATE DEFAULT GETDATE()
+);
+
+-- DROP TABLE Notes;
