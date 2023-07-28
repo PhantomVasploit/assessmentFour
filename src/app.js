@@ -23,5 +23,5 @@ app.use('/api/note/v1', routes)
 app.use(errorLogger)
 
 const server = app.listen(port, ()=>{
-    console.log(`Note book API server initiated`);
+    console.log(`Note book API server initiated on port: ${port}`);
 })

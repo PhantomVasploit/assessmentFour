@@ -5,11 +5,12 @@ const { sqlConfig } = require('../config/database.connection.config')
 
 module.exports.createNewNote = (req, res)=>{
     // sanitize data first
-    const {error} = noteSchema.validate(req.body)
+    const { title, content, createdAt } = req.body
+    
+    const {error} = noteSchema.validate({title, content})
     if(error){
         return res.status(400).json({error: error.message})
     }else{
-        const { title, content, createdAt } = req.body
         mssql.connect(sqlConfig)
         .then((pool)=>{
             pool.request()
