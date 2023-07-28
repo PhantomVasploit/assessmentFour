@@ -31,7 +31,7 @@ module.exports.createNewNote = (req, res)=>{
 }
 
 
-module.exports.getAllNote = (req, res)=>{
+module.exports.getAllNotes = (req, res)=>{
     mssql.connect(sqlConfig)
     .then((pool)=>{
         pool.request()
