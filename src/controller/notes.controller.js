@@ -81,6 +81,7 @@ module.exports.updateNote = (req, res)=>{
         mssql.connect(sqlConfig)
         .then((pool)=>{
             pool.request()
+            .input('id', id)
             .input('title', title)
             .input('content', content)
             .execute('updateNoteProcedure')
