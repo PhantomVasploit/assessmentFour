@@ -56,7 +56,7 @@ module.exports.getANote = (req, res)=>{
     .then((pool)=>{
         pool.request()
         .input('id', id)
-        .execute()
+        .execute('getANoteProc')
         .then((result)=>{
             return res.status(200).json({message: 'Fetch successful', note: result.recordset[0]})
         })
