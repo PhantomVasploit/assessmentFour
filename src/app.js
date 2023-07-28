@@ -2,6 +2,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const morgan = require('morgan')
 const express = require('express')
+const winston = require('winston')
 const bodyParser = require('body-parser')
 const { errorLogger } = require('./middleware/errorLogger')
 require('dotenv').config()
@@ -9,6 +10,12 @@ require('dotenv').config()
 const app = express()
 const port = process.env.PORT
 const routes = require('./routes/routes')
+
+// catching all exceptions
+winston.exceptions.handle(new winston.transports.File({filename: 'exceptions.log'}))
+process.on('unhandledRejection', (ex)=>{
+    throw ex;
+})
 
 // setting up middlewares
 app.use(cors())

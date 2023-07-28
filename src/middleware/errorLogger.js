@@ -1,6 +1,8 @@
+const logger = require('../config/winston.config')
+
 module.exports.errorLogger = (err, req, res, next)=>{
     if(err){
-        console.log(err.message);
+        logger.error(err.message, err)
         return res.status(500).json({error: err.message})
     }
     next()
