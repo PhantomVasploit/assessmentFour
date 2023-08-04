@@ -5,30 +5,33 @@ const { sqlConfig } = require('../config/database.connection.config')
 
 module.exports.createNewNote = (req, res)=>{
     // sanitize data first
-    const { title, content, createdAt } = req.body
-    
-    const {error} = noteSchema.validate({title, content})
-    if(error){
-        return res.status(400).json({error: error.message})
+    const { title, content } = req.body
+    if(!title || !content){
+        return res.status(422).json({error: 'Request body can not be empty'})
     }else{
-        mssql.connect(sqlConfig)
-        .then((pool)=>{
-            pool.request()
-            .input('title', title)
-            .input('content', content)
-            .input('createdAt', createdAt)
-            .execute('createNewNoteProc')
-            .then((result)=>{
-                return res.status(201).json({message: 'New note created successfully'})
+        const {error} = noteSchema.validate({title, content})
+        if(error){
+            return res.status(400).json({error: error.message})
+        }else{
+            mssql.connect(sqlConfig)
+            .then((pool)=>{
+                pool.request()
+                .input('title', title)
+                .input('content', content)
+                .execute('createNewNoteProc')
+                .then((result)=>{
+                    console.log(result);
+                    return res.status(201).json({message: 'New note created successfully'})
+                })
+                .catch((e)=>{
+                return res.status(400).json({error: e.message})
+                })
             })
             .catch((e)=>{
-               return res.status(400).json({error: e.message})
+            return res.status(500).json({error: `Internal server error: ${e.message}`})
             })
-        })
-        .catch((e)=>{
-           return res.status(500).json({error: `Internal server error: ${e.message}`})
-        })
-    }
+        }
+    }  
 }
 
 
@@ -38,6 +41,7 @@ module.exports.getAllNotes = (req, res)=>{
         pool.request()
         .execute('getAllNotesProc')
         .then((result)=>{
+            // console.log(result);
             return res.status(200).json({message: 'Fetch successful', notes: result.recordset})
         })
         .catch((e)=>{
@@ -58,7 +62,12 @@ module.exports.getANote = (req, res)=>{
         .input('id', id)
         .execute('getANoteProc')
         .then((result)=>{
-            return res.status(200).json({message: 'Fetch successful', note: result.recordset[0]})
+            console.log(result);
+            if(result.rowsAffected[0] == 1){
+                return res.status(200).json({message: 'Fetch successful', note: result.recordset[0]})
+            }else{
+                return res.status(400).json({error: 'Invalid note id'})
+            }
         })
         .catch((e)=>{
             return res.status(400).json({error: e.message})

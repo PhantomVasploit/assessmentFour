@@ -10,3 +10,5 @@ CREATE TABLE Notes(
 );
 
 -- DROP TABLE Notes;
+
+SELECT * FROM Notes;

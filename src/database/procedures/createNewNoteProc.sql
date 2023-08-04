@@ -2,7 +2,8 @@ CREATE OR ALTER PROCEDURE createNewNoteProc(@title VARCHAR(255), @content VARCHA
 AS
 BEGIN
     INSERT
-    INTO Notes(title, content, createdAt)
+    INTO Notes(title, content)
     VALUES(@title, @content)
 END;
 
+-- DROP PROCEDURE createNewNoteProc;
