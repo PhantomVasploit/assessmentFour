@@ -1,5 +1,5 @@
 import mssql from 'mssql'
-import { createNewNote, getANote, getAllNotes } from '../src/controller/notes.controller'
+import { createNewNote, deleteNote, getANote, getAllNotes, updateNote } from '../src/controller/notes.controller'
 
 describe("Note controller test suite", ()=>{
     
@@ -133,7 +133,7 @@ describe("Note controller test suite", ()=>{
     })
 
 
-    describe("Updating a note", ()=>{
+    describe("Updating a note test suite", ()=>{
         it("should update a note when the id and body is valid", ()=>{
             
             const req = {
@@ -146,7 +146,52 @@ describe("Note controller test suite", ()=>{
                     createdAt: "2023-08-02T00:00:00.000Z"
                 }
             }
+
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            }
+
+            jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
+                request: jest.fn().mockReturnThis(),
+                input: jest.fn().mockReturnThis(),
+                execute: jest.fn().mockResolvedValueOnce({
+                    rowsAffected: [1]
+                })
+            })
+
+            updateNote(req, res)
+            expect(res.status).toHaveBeenCalledWith(200)
+            expect(res.json).toHaveBeenCalledWith({message: 'Updated note successfully'})
         })
+    })
+
+
+    describe("Delete a note test suite", ()=>{
+        it('should delete a note if id is valid', ()=>{
+            const req = {
+                params: {
+                    id: 12
+                }
+            }
+    
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            }
+    
+            jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
+                request: jest.fn().mockReturnThis(),
+                input: jest.fn().mockReturnThis(),
+                execute: jest.fn().mockResolvedValueOnce({
+                    rowsAffected: [1]
+                })
+            })
+    
+            deleteNote(req, res)
+            expect(res.status).toHaveBeenCalledWith(200)
+            expect(res.json).toHaveBeenCalledWith({message: 'Note deleted successfully'})
+        })      
     })
 
 })

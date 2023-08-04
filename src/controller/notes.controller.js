@@ -91,14 +91,26 @@ module.exports.updateNote = (req, res)=>{
         .then((pool)=>{
             pool.request()
             .input('id', id)
-            .input('title', title)
-            .input('content', content)
-            .execute('updateNoteProcedure')
-            .then((result)=>{
-                return res.status(200).json({message: 'Updated note successfully'})
+            .execute('getANoteProc')
+            .then((note)=>{
+                if(note.rowsAffected[0] == 1){
+                    pool.request()
+                    .input('id', id)
+                    .input('title', title)
+                    .input('content', content)
+                    .execute('updateNoteProcedure')
+                    .then((result)=>{
+                        return res.status(200).json({message: 'Updated note successfully'})
+                    })
+                    .catch((e)=>{
+                        return res.status(400).json({error: e.message})
+                    })
+                }else{
+                    return res.status(400).json({error: 'Invalid note id'})
+                }
             })
             .catch((e)=>{
-                return res.status(400).json({error: e.message})
+                return res.status(500).json({error: 'internal server error'})
             })
         })
         .catch((e)=>{
@@ -114,12 +126,24 @@ module.exports.deleteNote = (req, res)=>{
     .then((pool)=>{
         pool.request()
         .input('id', id)
-        .execute('deleteNoteProc')
-        .then((result)=>{
-            return res.status(200).json({message: 'Note deleted successfully'})
+        .execute('getANoteProc')
+        .then((note)=>{
+            if(note.rowsAffected[0] == 1){
+                pool.request()
+                .input('id', id)
+                .execute('deleteNoteProc')
+                .then((result)=>{
+                    return res.status(200).json({message: 'Note deleted successfully'})
+                })
+                .catch((e)=>{
+                    res.status(400).json({error: e.message})
+                })
+            }else{
+                return res.status(400).json({error: 'Invalid note id'})
+            }
         })
         .catch((e)=>{
-            res.status(400).json({error: e.message})
+            return res.status(500).json({error: `Internal server error: ${e.message}`})    
         })
     })
     .catch((e)=>{
